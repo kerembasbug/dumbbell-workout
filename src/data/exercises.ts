@@ -1,5 +1,128 @@
 import type { BodyRegion, Exercise } from '@/domain/types';
 
+const IMG = {
+  'db-bench-press': {
+    start: require('../../assets/generated/exercises/db-bench-press-start.jpg'),
+    mid: require('../../assets/generated/exercises/db-bench-press-mid.jpg'),
+    end: require('../../assets/generated/exercises/db-bench-press-end.jpg'),
+  },
+  'db-floor-press': {
+    start: require('../../assets/generated/exercises/db-floor-press-start.jpg'),
+    mid: require('../../assets/generated/exercises/db-floor-press-mid.jpg'),
+    end: require('../../assets/generated/exercises/db-floor-press-end.jpg'),
+  },
+  'db-fly': {
+    start: require('../../assets/generated/exercises/db-fly-start.jpg'),
+    mid: require('../../assets/generated/exercises/db-fly-mid.jpg'),
+    end: require('../../assets/generated/exercises/db-fly-end.jpg'),
+  },
+  'one-arm-row': {
+    start: require('../../assets/generated/exercises/one-arm-row-start.jpg'),
+    mid: require('../../assets/generated/exercises/one-arm-row-mid.jpg'),
+    end: require('../../assets/generated/exercises/one-arm-row-end.jpg'),
+  },
+  'bent-over-row': {
+    start: require('../../assets/generated/exercises/bent-over-row-start.jpg'),
+    mid: require('../../assets/generated/exercises/bent-over-row-mid.jpg'),
+    end: require('../../assets/generated/exercises/bent-over-row-end.jpg'),
+  },
+  'db-pullover': {
+    start: require('../../assets/generated/exercises/db-pullover-start.jpg'),
+    mid: require('../../assets/generated/exercises/db-pullover-mid.jpg'),
+    end: require('../../assets/generated/exercises/db-pullover-end.jpg'),
+  },
+  'shoulder-press': {
+    start: require('../../assets/generated/exercises/shoulder-press-start.jpg'),
+    mid: require('../../assets/generated/exercises/shoulder-press-mid.jpg'),
+    end: require('../../assets/generated/exercises/shoulder-press-end.jpg'),
+  },
+  'lateral-raise': {
+    start: require('../../assets/generated/exercises/lateral-raise-start.jpg'),
+    mid: require('../../assets/generated/exercises/lateral-raise-mid.jpg'),
+    end: require('../../assets/generated/exercises/lateral-raise-end.jpg'),
+  },
+  'front-raise': {
+    start: require('../../assets/generated/exercises/front-raise-start.jpg'),
+    mid: require('../../assets/generated/exercises/front-raise-mid.jpg'),
+    end: require('../../assets/generated/exercises/front-raise-end.jpg'),
+  },
+  'biceps-curl': {
+    start: require('../../assets/generated/exercises/biceps-curl-start.jpg'),
+    mid: require('../../assets/generated/exercises/biceps-curl-mid.jpg'),
+    end: require('../../assets/generated/exercises/biceps-curl-end.jpg'),
+  },
+  'hammer-curl': {
+    start: require('../../assets/generated/exercises/hammer-curl-start.jpg'),
+    mid: require('../../assets/generated/exercises/hammer-curl-mid.jpg'),
+    end: require('../../assets/generated/exercises/hammer-curl-end.jpg'),
+  },
+  'concentration-curl': {
+    start: require('../../assets/generated/exercises/concentration-curl-start.jpg'),
+    mid: require('../../assets/generated/exercises/concentration-curl-mid.jpg'),
+    end: require('../../assets/generated/exercises/concentration-curl-end.jpg'),
+  },
+  'overhead-triceps-ext': {
+    start: require('../../assets/generated/exercises/overhead-triceps-ext-start.jpg'),
+    mid: require('../../assets/generated/exercises/overhead-triceps-ext-mid.jpg'),
+    end: require('../../assets/generated/exercises/overhead-triceps-ext-end.jpg'),
+  },
+  'triceps-kickback': {
+    start: require('../../assets/generated/exercises/triceps-kickback-start.jpg'),
+    mid: require('../../assets/generated/exercises/triceps-kickback-mid.jpg'),
+    end: require('../../assets/generated/exercises/triceps-kickback-end.jpg'),
+  },
+  'goblet-squat': {
+    start: require('../../assets/generated/exercises/goblet-squat-start.jpg'),
+    mid: require('../../assets/generated/exercises/goblet-squat-mid.jpg'),
+    end: require('../../assets/generated/exercises/goblet-squat-end.jpg'),
+  },
+  'db-lunge': {
+    start: require('../../assets/generated/exercises/db-lunge-start.jpg'),
+    mid: require('../../assets/generated/exercises/db-lunge-mid.jpg'),
+    end: require('../../assets/generated/exercises/db-lunge-end.jpg'),
+  },
+  'rdl': {
+    start: require('../../assets/generated/exercises/rdl-start.jpg'),
+    mid: require('../../assets/generated/exercises/rdl-mid.jpg'),
+    end: require('../../assets/generated/exercises/rdl-end.jpg'),
+  },
+  'calf-raise': {
+    start: require('../../assets/generated/exercises/calf-raise-start.jpg'),
+    mid: require('../../assets/generated/exercises/calf-raise-mid.jpg'),
+    end: require('../../assets/generated/exercises/calf-raise-end.jpg'),
+  },
+  'russian-twist': {
+    start: require('../../assets/generated/exercises/russian-twist-start.jpg'),
+    mid: require('../../assets/generated/exercises/russian-twist-mid.jpg'),
+    end: require('../../assets/generated/exercises/russian-twist-end.jpg'),
+  },
+  'weighted-crunch': {
+    start: require('../../assets/generated/exercises/weighted-crunch-start.jpg'),
+    mid: require('../../assets/generated/exercises/weighted-crunch-mid.jpg'),
+    end: require('../../assets/generated/exercises/weighted-crunch-end.jpg'),
+  },
+  'side-bend': {
+    start: require('../../assets/generated/exercises/side-bend-start.jpg'),
+    mid: require('../../assets/generated/exercises/side-bend-mid.jpg'),
+    end: require('../../assets/generated/exercises/side-bend-end.jpg'),
+  },
+  'db-thruster': {
+    start: require('../../assets/generated/exercises/db-thruster-start.jpg'),
+    mid: require('../../assets/generated/exercises/db-thruster-mid.jpg'),
+    end: require('../../assets/generated/exercises/db-thruster-end.jpg'),
+  },
+  'renegade-row': {
+    start: require('../../assets/generated/exercises/renegade-row-start.jpg'),
+    mid: require('../../assets/generated/exercises/renegade-row-mid.jpg'),
+    end: require('../../assets/generated/exercises/renegade-row-end.jpg'),
+  },
+  'db-deadlift': {
+    start: require('../../assets/generated/exercises/db-deadlift-start.jpg'),
+    mid: require('../../assets/generated/exercises/db-deadlift-mid.jpg'),
+    end: require('../../assets/generated/exercises/db-deadlift-end.jpg'),
+  },
+} as const;
+
 /**
  * v1 dumbbell egzersiz veri tabanı. Tüm bölgeleri kapsar.
  * `baseLoadFactor`: referans kullanıcı (orta seviye, erkek, hipertrofi hedefi) için
@@ -9,6 +132,9 @@ export const EXERCISES: Exercise[] = [
   // ---------------- GÖĞÜS ----------------
   {
     id: 'db-bench-press',
+    imageStart: IMG['db-bench-press'].start,
+    imageMid: IMG['db-bench-press'].mid,
+    imageEnd: IMG['db-bench-press'].end,
     name: 'Dumbbell Bench Press',
     regions: ['chest', 'triceps', 'shoulders'],
     equipment: 'dumbbell',
@@ -24,6 +150,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'db-floor-press',
+    imageStart: IMG['db-floor-press'].start,
+    imageMid: IMG['db-floor-press'].mid,
+    imageEnd: IMG['db-floor-press'].end,
     name: 'Dumbbell Floor Press',
     regions: ['chest', 'triceps'],
     equipment: 'dumbbell',
@@ -39,6 +168,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'db-fly',
+    imageStart: IMG['db-fly'].start,
+    imageMid: IMG['db-fly'].mid,
+    imageEnd: IMG['db-fly'].end,
     name: 'Dumbbell Fly',
     regions: ['chest'],
     equipment: 'dumbbell',
@@ -55,6 +187,9 @@ export const EXERCISES: Exercise[] = [
   // ---------------- SIRT ----------------
   {
     id: 'one-arm-row',
+    imageStart: IMG['one-arm-row'].start,
+    imageMid: IMG['one-arm-row'].mid,
+    imageEnd: IMG['one-arm-row'].end,
     name: 'One-Arm Dumbbell Row',
     regions: ['back', 'biceps'],
     equipment: 'dumbbell',
@@ -70,6 +205,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'bent-over-row',
+    imageStart: IMG['bent-over-row'].start,
+    imageMid: IMG['bent-over-row'].mid,
+    imageEnd: IMG['bent-over-row'].end,
     name: 'Bent-Over Dumbbell Row',
     regions: ['back', 'biceps'],
     equipment: 'dumbbell',
@@ -85,6 +223,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'db-pullover',
+    imageStart: IMG['db-pullover'].start,
+    imageMid: IMG['db-pullover'].mid,
+    imageEnd: IMG['db-pullover'].end,
     name: 'Dumbbell Pullover',
     regions: ['back', 'chest'],
     equipment: 'dumbbell',
@@ -101,6 +242,9 @@ export const EXERCISES: Exercise[] = [
   // ---------------- OMUZ ----------------
   {
     id: 'shoulder-press',
+    imageStart: IMG['shoulder-press'].start,
+    imageMid: IMG['shoulder-press'].mid,
+    imageEnd: IMG['shoulder-press'].end,
     name: 'Dumbbell Shoulder Press',
     regions: ['shoulders', 'triceps'],
     equipment: 'dumbbell',
@@ -115,6 +259,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'lateral-raise',
+    imageStart: IMG['lateral-raise'].start,
+    imageMid: IMG['lateral-raise'].mid,
+    imageEnd: IMG['lateral-raise'].end,
     name: 'Lateral Raise',
     regions: ['shoulders'],
     equipment: 'dumbbell',
@@ -129,6 +276,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'front-raise',
+    imageStart: IMG['front-raise'].start,
+    imageMid: IMG['front-raise'].mid,
+    imageEnd: IMG['front-raise'].end,
     name: 'Front Raise',
     regions: ['shoulders'],
     equipment: 'dumbbell',
@@ -145,6 +295,9 @@ export const EXERCISES: Exercise[] = [
   // ---------------- BICEPS ----------------
   {
     id: 'biceps-curl',
+    imageStart: IMG['biceps-curl'].start,
+    imageMid: IMG['biceps-curl'].mid,
+    imageEnd: IMG['biceps-curl'].end,
     name: 'Dumbbell Biceps Curl',
     regions: ['biceps'],
     equipment: 'dumbbell',
@@ -159,6 +312,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'hammer-curl',
+    imageStart: IMG['hammer-curl'].start,
+    imageMid: IMG['hammer-curl'].mid,
+    imageEnd: IMG['hammer-curl'].end,
     name: 'Hammer Curl',
     regions: ['biceps'],
     equipment: 'dumbbell',
@@ -173,6 +329,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'concentration-curl',
+    imageStart: IMG['concentration-curl'].start,
+    imageMid: IMG['concentration-curl'].mid,
+    imageEnd: IMG['concentration-curl'].end,
     name: 'Concentration Curl',
     regions: ['biceps'],
     equipment: 'dumbbell',
@@ -189,6 +348,9 @@ export const EXERCISES: Exercise[] = [
   // ---------------- TRICEPS ----------------
   {
     id: 'overhead-triceps-ext',
+    imageStart: IMG['overhead-triceps-ext'].start,
+    imageMid: IMG['overhead-triceps-ext'].mid,
+    imageEnd: IMG['overhead-triceps-ext'].end,
     name: 'Overhead Triceps Extension',
     regions: ['triceps'],
     equipment: 'dumbbell',
@@ -203,6 +365,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'triceps-kickback',
+    imageStart: IMG['triceps-kickback'].start,
+    imageMid: IMG['triceps-kickback'].mid,
+    imageEnd: IMG['triceps-kickback'].end,
     name: 'Triceps Kickback',
     regions: ['triceps'],
     equipment: 'dumbbell',
@@ -219,6 +384,9 @@ export const EXERCISES: Exercise[] = [
   // ---------------- BACAK ----------------
   {
     id: 'goblet-squat',
+    imageStart: IMG['goblet-squat'].start,
+    imageMid: IMG['goblet-squat'].mid,
+    imageEnd: IMG['goblet-squat'].end,
     name: 'Goblet Squat',
     regions: ['legs', 'core'],
     equipment: 'dumbbell',
@@ -233,6 +401,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'db-lunge',
+    imageStart: IMG['db-lunge'].start,
+    imageMid: IMG['db-lunge'].mid,
+    imageEnd: IMG['db-lunge'].end,
     name: 'Dumbbell Lunge',
     regions: ['legs'],
     equipment: 'dumbbell',
@@ -247,6 +418,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'rdl',
+    imageStart: IMG['rdl'].start,
+    imageMid: IMG['rdl'].mid,
+    imageEnd: IMG['rdl'].end,
     name: 'Romanian Deadlift',
     regions: ['legs', 'back'],
     equipment: 'dumbbell',
@@ -262,6 +436,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'calf-raise',
+    imageStart: IMG['calf-raise'].start,
+    imageMid: IMG['calf-raise'].mid,
+    imageEnd: IMG['calf-raise'].end,
     name: 'Standing Calf Raise',
     regions: ['legs'],
     equipment: 'dumbbell',
@@ -278,6 +455,9 @@ export const EXERCISES: Exercise[] = [
   // ---------------- KARIN ----------------
   {
     id: 'russian-twist',
+    imageStart: IMG['russian-twist'].start,
+    imageMid: IMG['russian-twist'].mid,
+    imageEnd: IMG['russian-twist'].end,
     name: 'Weighted Russian Twist',
     regions: ['core'],
     equipment: 'dumbbell',
@@ -292,6 +472,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'weighted-crunch',
+    imageStart: IMG['weighted-crunch'].start,
+    imageMid: IMG['weighted-crunch'].mid,
+    imageEnd: IMG['weighted-crunch'].end,
     name: 'Weighted Crunch',
     regions: ['core'],
     equipment: 'dumbbell',
@@ -306,6 +489,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'side-bend',
+    imageStart: IMG['side-bend'].start,
+    imageMid: IMG['side-bend'].mid,
+    imageEnd: IMG['side-bend'].end,
     name: 'Dumbbell Side Bend',
     regions: ['core'],
     equipment: 'dumbbell',
@@ -322,6 +508,9 @@ export const EXERCISES: Exercise[] = [
   // ---------------- TÜM VÜCUT ----------------
   {
     id: 'db-thruster',
+    imageStart: IMG['db-thruster'].start,
+    imageMid: IMG['db-thruster'].mid,
+    imageEnd: IMG['db-thruster'].end,
     name: 'Dumbbell Thruster',
     regions: ['fullbody', 'legs', 'shoulders'],
     equipment: 'dumbbell',
@@ -337,6 +526,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'renegade-row',
+    imageStart: IMG['renegade-row'].start,
+    imageMid: IMG['renegade-row'].mid,
+    imageEnd: IMG['renegade-row'].end,
     name: 'Renegade Row',
     regions: ['fullbody', 'back', 'core'],
     equipment: 'dumbbell',
@@ -351,6 +543,9 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'db-deadlift',
+    imageStart: IMG['db-deadlift'].start,
+    imageMid: IMG['db-deadlift'].mid,
+    imageEnd: IMG['db-deadlift'].end,
     name: 'Dumbbell Deadlift',
     regions: ['fullbody', 'legs', 'back'],
     equipment: 'dumbbell',

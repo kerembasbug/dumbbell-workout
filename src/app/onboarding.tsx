@@ -1,6 +1,8 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
+
+const HERO = require('../../assets/generated/onboarding-hero.jpg');
 
 import { Button, Card, Chip, Row, Screen, Spacer, Stepper, Text } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
@@ -139,6 +141,13 @@ export default function OnboardingScreen() {
 
   return (
     <Screen>
+      {step === 0 && (
+        <Image
+          source={HERO}
+          style={{ width: '100%', height: 180, borderRadius: 16, marginBottom: Spacing.md }}
+          resizeMode="cover"
+        />
+      )}
       <Text variant="caption" muted>
         Adım {step + 1} / {steps.length} • {GOAL_SCHEME[goal].label}
       </Text>

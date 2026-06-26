@@ -39,6 +39,12 @@ export interface Exercise {
   tips: string[];
   /** Vücut ağırlığına oranla referans yük (öneri motoru kalibrasyonu). */
   baseLoadFactor: number;
+  /** Hareketin başlangıç pozu illüstrasyonu (require ile yüklenir). */
+  imageStart?: number;
+  /** Hareketin orta pozu illüstrasyonu (require ile yüklenir). */
+  imageMid?: number;
+  /** Hareketin bitiş pozu illüstrasyonu (require ile yüklenir). */
+  imageEnd?: number;
 }
 
 export interface SetLog {

@@ -1,6 +1,6 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
 
 import { Button, Card, Chip, Row, Screen, Spacer, Text } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
@@ -52,9 +52,42 @@ export default function ExerciseScreen() {
 
   const already = hasExercise(exercise.id);
 
+  const phaseFrames = [
+    { label: 'Başlangıç', src: exercise.imageStart },
+    { label: 'Orta', src: exercise.imageMid },
+    { label: 'Bitiş', src: exercise.imageEnd },
+  ];
+
   return (
     <Screen>
       <Stack.Screen options={{ title: exercise.name }} />
+      {exercise.imageStart && exercise.imageEnd && (
+        <View style={{ marginBottom: Spacing.md }}>
+          <Row style={{ alignItems: 'flex-start', gap: 2 }}>
+            {phaseFrames.map((f, i) => (
+              <Row key={f.label} style={{ alignItems: 'center', flex: f.src ? 1 : 0, gap: 2 }}>
+                {i > 0 && f.src && (
+                  <Text variant="subtitle" color={t.accent}>
+                    →
+                  </Text>
+                )}
+                {f.src && (
+                  <View style={{ flex: 1 }}>
+                    <Image
+                      source={f.src}
+                      style={{ width: '100%', height: 130, borderRadius: 10, backgroundColor: '#16203a' }}
+                      resizeMode="contain"
+                    />
+                    <Text variant="caption" muted style={{ textAlign: 'center', marginTop: Spacing.xs }}>
+                      {f.label}
+                    </Text>
+                  </View>
+                )}
+              </Row>
+            ))}
+          </Row>
+        </View>
+      )}
       <Text variant="title">{exercise.name}</Text>
       <Spacer size={Spacing.xs} />
       <Text variant="caption" muted>
