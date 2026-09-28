@@ -45,7 +45,7 @@ export default function RootLayout() {
                 headerShadowVisible: false,
                 contentStyle: { backgroundColor: t.background },
               }}>
-              <Stack.Screen name="index" options={{ title: 'Dumbbell Antrenman' }} />
+              <Stack.Screen name="index" options={{ title: 'Dambıl Antrenman' }} />
               <Stack.Screen name="onboarding" options={{ title: 'Başlangıç', headerBackVisible: false }} />
               <Stack.Screen name="region/[region]" options={{ title: 'Egzersizler' }} />
               <Stack.Screen name="exercise/[id]" options={{ title: 'Egzersiz' }} />
