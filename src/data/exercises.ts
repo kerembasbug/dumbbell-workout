@@ -135,6 +135,8 @@ export const EXERCISES: Exercise[] = [
   // ---------------- GÖĞÜS ----------------
   {
     id: 'db-bench-press',
+    support: 'bench',
+    alternative: 'db-floor-press',
     imageStart: IMG['db-bench-press'].start,
     imageMid: IMG['db-bench-press'].mid,
     imageEnd: IMG['db-bench-press'].end,
@@ -171,6 +173,7 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'db-fly',
+    support: 'bench',
     imageStart: IMG['db-fly'].start,
     imageMid: IMG['db-fly'].mid,
     imageEnd: IMG['db-fly'].end,
@@ -190,6 +193,8 @@ export const EXERCISES: Exercise[] = [
   // ---------------- SIRT ----------------
   {
     id: 'one-arm-row',
+    support: 'chair',
+    alternative: 'bent-over-row',
     imageStart: IMG['one-arm-row'].start,
     imageMid: IMG['one-arm-row'].mid,
     imageEnd: IMG['one-arm-row'].end,
@@ -226,6 +231,7 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'db-pullover',
+    support: 'bench',
     imageStart: IMG['db-pullover'].start,
     imageMid: IMG['db-pullover'].mid,
     imageEnd: IMG['db-pullover'].end,
@@ -332,6 +338,8 @@ export const EXERCISES: Exercise[] = [
   },
   {
     id: 'concentration-curl',
+    support: 'chair',
+    alternative: 'hammer-curl',
     imageStart: IMG['concentration-curl'].start,
     imageMid: IMG['concentration-curl'].mid,
     imageEnd: IMG['concentration-curl'].end,

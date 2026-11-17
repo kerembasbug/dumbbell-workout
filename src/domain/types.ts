@@ -39,6 +39,10 @@ export interface Exercise {
   tips: string[];
   /** Vücut ağırlığına oranla referans yük (öneri motoru kalibrasyonu). */
   baseLoadFactor: number;
+  /** Gereken destek: sehpa (bench) ya da sandalye. */
+  support?: 'bench' | 'chair';
+  /** Destek yoksa yapılabilecek alternatif hareketin id'si. */
+  alternative?: string;
   /** Hareketin başlangıç pozu illüstrasyonu (require ile yüklenir). */
   imageStart?: number;
   /** Hareketin orta pozu illüstrasyonu (require ile yüklenir). */

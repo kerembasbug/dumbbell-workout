@@ -83,6 +83,22 @@ export default function ExerciseScreen() {
       <Text variant="caption" muted>
         {exercise.regions.map((r) => t(`region.${r}`)).join(' • ')}
       </Text>
+      {exercise.support && (
+        <>
+          <Spacer size={Spacing.sm} />
+          <Text variant="caption">{t(`exercise.support.${exercise.support}`)}</Text>
+          {exercise.alternative && getExercise(exercise.alternative) && (
+            <Text
+              variant="caption"
+              color={c.accent}
+              accessibilityRole="link"
+              onPress={() => router.push(`/exercise/${exercise.alternative}`)}
+              style={{ marginTop: 2, fontWeight: '600' }}>
+              {t('exercise.alternative', { name: getExercise(exercise.alternative)!.name })}
+            </Text>
+          )}
+        </>
+      )}
 
       <Spacer />
       <Card style={{ backgroundColor: c.accentSoft, borderColor: c.accent }}>
