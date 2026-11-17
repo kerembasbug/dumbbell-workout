@@ -218,6 +218,7 @@ export function Stepper({
   min = 0,
   max = 9999,
   suffix,
+  compact,
 }: {
   value: number;
   onChange: (v: number) => void;
@@ -225,7 +226,10 @@ export function Stepper({
   min?: number;
   max?: number;
   suffix?: string;
+  /** Dar satırlar için küçük görünüm; dokunma alanı hitSlop ile 44px kalır. */
+  compact?: boolean;
 }) {
+  const size = compact ? 32 : 44;
   const t = useTheme();
   const clamp = (v: number) => Math.max(min, Math.min(max, Math.round(v * 100) / 100));
   const btn = (label: string, delta: number) => (
@@ -233,23 +237,24 @@ export function Stepper({
       onPress={() => onChange(clamp(value + delta))}
       accessibilityRole="button"
       accessibilityLabel={`${label === '+' ? '+' : '−'}${Math.abs(delta)}${suffix ? ` ${suffix}` : ''}`}
+      hitSlop={compact ? 6 : 0}
       style={({ pressed }) => ({
-        width: 44,
-        height: 44,
+        width: size,
+        height: size,
         borderRadius: Radius.sm,
         backgroundColor: t.backgroundElement,
         alignItems: 'center',
         justifyContent: 'center',
         opacity: pressed ? 0.7 : 1,
       })}>
-      <RNText style={{ color: t.text, fontSize: FontSize.xl, fontWeight: '700' }}>{label}</RNText>
+      <RNText style={{ color: t.text, fontSize: compact ? FontSize.lg : FontSize.xl, fontWeight: '700' }}>{label}</RNText>
     </Pressable>
   );
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: compact ? 2 : Spacing.sm }}>
       {btn('−', -step)}
-      <View style={{ minWidth: 64, alignItems: 'center' }}>
-        <RNText style={{ color: t.text, fontSize: FontSize.lg, fontWeight: '700' }}>
+      <View style={{ minWidth: compact ? 38 : 64, alignItems: 'center' }}>
+        <RNText style={{ color: t.text, fontSize: compact ? FontSize.md : FontSize.lg, fontWeight: '700' }}>
           {value}
           {suffix ? ` ${suffix}` : ''}
         </RNText>

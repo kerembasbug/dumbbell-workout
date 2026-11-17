@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
@@ -32,7 +32,8 @@ export default function ExerciseScreen() {
   const [picked, setPicked] = useState<number | null>(null);
 
   const exercise = id ? getExercise(id) : undefined;
-  if (!exercise || !profile) {
+  if (!profile) return <Redirect href="/onboarding" />;
+  if (!exercise) {
     return (
       <Screen>
         <Text muted>{t('common.notFound')}</Text>

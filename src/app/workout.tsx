@@ -1,19 +1,44 @@
+import { activateKeepAwakeAsync, deactivateKeepAwake, isAvailableAsync } from 'expo-keep-awake';
+import { Image } from 'expo-image';
 import { Redirect, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
-import { RestTimer } from '@/components/RestTimer';
+import { RestTimer, useRestTimer } from '@/components/RestTimer';
 import { Button, Card, Row, Screen, Spacer, Stepper, Text } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
-import { regionName } from '@/data/bodyRegions';
 import { getExercise } from '@/data/exercises';
+import { lastPerformance } from '@/domain/progress';
 import { GOAL_SCHEME } from '@/domain/recommend';
 import { useTheme } from '@/hooks/use-theme';
+import { useUnits } from '@/hooks/use-units';
+import { useT } from '@/i18n';
+import { tapFeedback } from '@/services/feedback';
 import { useHistoryStore } from '@/store/history';
 import { useProfileStore } from '@/store/profile';
+import { useProgramStore } from '@/store/program';
 import { useSessionStore } from '@/store/session';
+import { useSettingsStore } from '@/store/settings';
+
+const KEEP_AWAKE_TAG = 'workout';
+
+/** Antrenman sırasında ekranın kararmasını engeller. */
+function useScreenAwake() {
+  useEffect(() => {
+    let on = false;
+    isAvailableAsync()
+      .then((ok) => (ok ? activateKeepAwakeAsync(KEEP_AWAKE_TAG).then(() => (on = true)) : undefined))
+      .catch(() => {});
+    return () => {
+      if (on) void deactivateKeepAwake(KEEP_AWAKE_TAG).catch(() => {});
+    };
+  }, []);
+}
 
 export default function WorkoutScreen() {
-  const t = useTheme();
+  const c = useTheme();
+  const { t } = useT();
+  const u = useUnits();
   const router = useRouter();
   const active = useSessionStore((s) => s.active);
   const updateSet = useSessionStore((s) => s.updateSet);
@@ -24,18 +49,34 @@ export default function WorkoutScreen() {
   const finish = useSessionStore((s) => s.finish);
   const discard = useSessionStore((s) => s.discard);
   const addSession = useHistoryStore((s) => s.addSession);
+  const history = useHistoryStore((s) => s.sessions);
+  const markDayDone = useProgramStore((s) => s.markDayDone);
   const profile = useProfileStore((s) => s.profile);
+  const autoRest = useSettingsStore((s) => s.settings.autoRest);
+  const timer = useRestTimer();
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  useScreenAwake();
 
   if (!active) return <Redirect href="/" />;
 
   const restSec = profile ? GOAL_SCHEME[profile.goal].restSec : 90;
   const totalSets = active.exercises.reduce((n, e) => n + e.sets.length, 0);
   const doneSets = active.exercises.reduce((n, e) => n + e.sets.filter((s) => s.done).length, 0);
+  const title = active.title ?? t(`region.${active.region}`);
+
+  const onToggle = (exIndex: number, setIndex: number) => {
+    const wasDone = active.exercises[exIndex].sets[setIndex].done;
+    toggleSetDone(exIndex, setIndex);
+    tapFeedback();
+    if (!wasDone && autoRest) timer.start(restSec);
+  };
 
   const onFinish = async () => {
     const session = finish();
-    if (session) await addSession(session);
-    router.replace('/history');
+    if (!session) return;
+    await addSession(session);
+    if (session.programId) await markDayDone(session.programId);
+    router.replace({ pathname: '/summary', params: { id: session.id } });
   };
 
   const onDiscard = () => {
@@ -45,139 +86,178 @@ export default function WorkoutScreen() {
 
   return (
     <Screen>
-      <Row style={{ justifyContent: 'space-between' }}>
-        <View>
+      <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <View style={{ flex: 1 }}>
           <Text variant="caption" muted>
-            {regionName(active.region)} antrenmanı
+            {title}
           </Text>
-          <Text variant="heading">
-            {doneSets}/{totalSets} set tamam
+          <Text variant="heading" accessibilityLiveRegion="polite">
+            {t('workout.progress', { done: doneSets, total: totalSets })}
           </Text>
         </View>
-        <Pressable onPress={onDiscard} hitSlop={10}>
-          <Text variant="label" color={t.danger}>
-            İptal
+        <Pressable onPress={() => setConfirmCancel(true)} hitSlop={12} accessibilityRole="button">
+          <Text variant="label" color={c.danger}>
+            {t('workout.cancel')}
           </Text>
         </Pressable>
       </Row>
+      <Spacer size={Spacing.sm} />
+      <View style={{ height: 6, borderRadius: 3, backgroundColor: c.backgroundElement, overflow: 'hidden' }}>
+        <View style={{ width: `${totalSets ? (doneSets / totalSets) * 100 : 0}%`, height: 6, backgroundColor: c.accent }} />
+      </View>
 
-      <Spacer />
-      <RestTimer defaultSec={restSec} />
+      {confirmCancel && (
+        <>
+          <Spacer size={Spacing.md} />
+          <Card style={{ borderColor: c.danger }}>
+            <Text variant="body">{t('workout.cancelConfirm')}</Text>
+            <Spacer size={Spacing.md} />
+            <Row gap={Spacing.md}>
+              <Button title={t('common.cancel')} variant="secondary" onPress={() => setConfirmCancel(false)} style={{ flex: 1 }} />
+              <Button title={t('workout.cancelYes')} variant="danger" onPress={onDiscard} style={{ flex: 1 }} />
+            </Row>
+          </Card>
+        </>
+      )}
+
+      <Spacer size={Spacing.md} />
+      <RestTimer timer={timer} suggestedSec={restSec} />
 
       {active.exercises.length === 0 && (
         <>
           <Spacer />
           <Text variant="body" muted style={{ textAlign: 'center' }}>
-            Henüz egzersiz yok. Bir bölge seçip egzersiz ekle.
+            {t('workout.empty')}
           </Text>
         </>
       )}
 
       {active.exercises.map((log, exIndex) => {
         const ex = getExercise(log.exerciseId);
+        const prev = lastPerformance(history, log.exerciseId);
         return (
           <View key={log.exerciseId}>
-            <Spacer />
+            <Spacer size={Spacing.md} />
             <Card>
               <Row style={{ justifyContent: 'space-between' }}>
-                <Text variant="subtitle" style={{ flex: 1 }}>
-                  {ex?.name ?? log.exerciseId}
-                </Text>
-                <Pressable onPress={() => removeExercise(exIndex)} hitSlop={8}>
-                  <Text variant="label" color={t.textSecondary}>
-                    Kaldır
+                <Pressable
+                  onPress={() => router.push(`/exercise/${log.exerciseId}`)}
+                  accessibilityRole="link"
+                  style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
+                  {ex?.imageMid != null && (
+                    <Image
+                      source={ex.imageMid}
+                      style={{ width: 40, height: 40, borderRadius: Radius.sm, backgroundColor: '#16203a' }}
+                      contentFit="contain"
+                    />
+                  )}
+                  <Text variant="subtitle" style={{ flex: 1 }}>
+                    {ex?.name ?? log.exerciseId}
+                  </Text>
+                </Pressable>
+                <Pressable onPress={() => removeExercise(exIndex)} hitSlop={10} accessibilityRole="button">
+                  <Text variant="label" color={c.textSecondary}>
+                    {t('workout.remove')}
                   </Text>
                 </Pressable>
               </Row>
               <Spacer size={Spacing.md} />
 
-              {/* Set başlıkları */}
               <Row style={{ paddingHorizontal: Spacing.xs }}>
-                <Text variant="caption" muted style={{ width: 36 }}>
-                  Set
+                <Text variant="caption" muted style={{ width: 22 }}>
+                  {t('workout.col.set')}
+                </Text>
+                <Text variant="caption" muted style={{ width: 48 }}>
+                  {t('workout.col.prev')}
                 </Text>
                 <Text variant="caption" muted style={{ flex: 1, textAlign: 'center' }}>
-                  Tekrar
+                  {t('workout.col.reps')}
                 </Text>
                 <Text variant="caption" muted style={{ flex: 1, textAlign: 'center' }}>
-                  Ağırlık
+                  {t('workout.col.weight')} ({u.label})
                 </Text>
                 <View style={{ width: 44 }} />
               </Row>
 
-              {log.sets.map((set, setIndex) => (
-                <View
-                  key={setIndex}
-                  style={{
-                    backgroundColor: set.done ? t.accentSoft : 'transparent',
-                    borderRadius: Radius.md,
-                    paddingVertical: Spacing.sm,
-                    paddingHorizontal: Spacing.xs,
-                    marginTop: Spacing.sm,
-                  }}>
-                  <Row style={{ justifyContent: 'space-between' }}>
-                    <Text variant="subtitle" style={{ width: 36 }}>
-                      {setIndex + 1}
-                    </Text>
-                    <View style={{ flex: 1, alignItems: 'center' }}>
-                      <Stepper
-                        value={set.reps}
-                        onChange={(v) => updateSet(exIndex, setIndex, { reps: v })}
-                        step={1}
-                        min={1}
-                        max={100}
-                      />
-                    </View>
-                    <View style={{ flex: 1, alignItems: 'center' }}>
-                      <Stepper
-                        value={set.weightKg}
-                        onChange={(v) => updateSet(exIndex, setIndex, { weightKg: v })}
-                        step={2.5}
-                        min={0}
-                        max={100}
-                        suffix="kg"
-                      />
-                    </View>
-                    <Pressable
-                      onPress={() => toggleSetDone(exIndex, setIndex)}
-                      style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: 18,
-                        backgroundColor: set.done ? t.success : t.backgroundElement,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                      <Text color={set.done ? '#fff' : t.textSecondary} variant="subtitle">
-                        ✓
+              {log.sets.map((set, setIndex) => {
+                const p = prev?.sets[setIndex];
+                return (
+                  <View
+                    key={setIndex}
+                    style={{
+                      backgroundColor: set.done ? c.accentSoft : 'transparent',
+                      borderRadius: Radius.md,
+                      paddingVertical: Spacing.xs,
+                      paddingHorizontal: Spacing.xs,
+                      marginTop: Spacing.xs,
+                    }}>
+                    <Row style={{ justifyContent: 'space-between' }} gap={4}>
+                      <Text variant="subtitle" style={{ width: 22 }}>
+                        {setIndex + 1}
                       </Text>
-                    </Pressable>
-                  </Row>
-                  {log.sets.length > 1 && (
-                    <Pressable onPress={() => removeSet(exIndex, setIndex)} hitSlop={6} style={{ marginTop: 2 }}>
-                      <Text variant="caption" color={t.textMuted} style={{ textAlign: 'right' }}>
-                        seti sil
+                      <Text variant="caption" muted style={{ width: 48 }}>
+                        {p ? `${u.toDisplay(p.weightKg)}×${p.reps}` : '—'}
                       </Text>
-                    </Pressable>
-                  )}
-                </View>
-              ))}
+                      <View style={{ flex: 1, alignItems: 'center' }}>
+                        <Stepper
+                          value={set.reps}
+                          onChange={(v) => updateSet(exIndex, setIndex, { reps: v })}
+                          step={1}
+                          min={1}
+                          max={100}
+                          compact
+                        />
+                      </View>
+                      <View style={{ flex: 1, alignItems: 'center' }}>
+                        <Stepper
+                          value={u.toDisplay(set.weightKg)}
+                          onChange={(v) => updateSet(exIndex, setIndex, { weightKg: u.fromDisplay(v) })}
+                          step={u.step}
+                          min={0}
+                          max={u.units === 'imperial' ? 220 : 100}
+                          compact
+                        />
+                      </View>
+                      <Pressable
+                        onPress={() => onToggle(exIndex, setIndex)}
+                        accessibilityRole="checkbox"
+                        accessibilityState={{ checked: set.done }}
+                        accessibilityLabel={t('workout.markDone', { n: setIndex + 1 })}
+                        style={{
+                          width: 44,
+                          height: 44,
+                          borderRadius: 22,
+                          backgroundColor: set.done ? c.success : c.backgroundElement,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                        <Text color={set.done ? '#fff' : c.textSecondary} variant="subtitle">
+                          ✓
+                        </Text>
+                      </Pressable>
+                    </Row>
+                    {log.sets.length > 1 && (
+                      <Pressable onPress={() => removeSet(exIndex, setIndex)} hitSlop={6} style={{ alignSelf: 'flex-end' }}>
+                        <Text variant="caption" color={c.textMuted}>
+                          {t('workout.removeSet')}
+                        </Text>
+                      </Pressable>
+                    )}
+                  </View>
+                );
+              })}
 
               <Spacer size={Spacing.sm} />
-              <Button title="+ Set ekle" variant="ghost" onPress={() => addSet(exIndex)} />
+              <Button title={t('workout.addSet')} variant="ghost" onPress={() => addSet(exIndex)} />
             </Card>
           </View>
         );
       })}
 
       <Spacer />
-      <Button
-        title="+ Egzersiz ekle"
-        variant="secondary"
-        onPress={() => router.push(`/region/${active.region}`)}
-      />
+      <Button title={t('workout.addExercise')} variant="secondary" onPress={() => router.push(`/region/${active.region}`)} />
       <Spacer size={Spacing.md} />
-      <Button title="Antrenmanı bitir ve kaydet" onPress={onFinish} disabled={active.exercises.length === 0} />
+      <Button title={t('workout.finish')} onPress={() => void onFinish()} disabled={doneSets === 0} />
       <Spacer size={Spacing.xl} />
     </Screen>
   );

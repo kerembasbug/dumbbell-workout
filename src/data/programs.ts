@@ -178,13 +178,15 @@ export function programPosition(p: Program, completed: number): ProgramPosition 
   };
 }
 
-/** Profile en uygun programları önce sıralar. */
+/**
+ * Profile en uygun programları önce sıralar. Seviye uyumsuzluğu hedef sırasından
+ * daha ağır cezalandırılır: yeni başlayana ileri seviye program önerilmez.
+ */
 export function rankPrograms(goal: Goal, experience: Program['level']): Program[] {
   const levelOrder = { beginner: 0, intermediate: 1, advanced: 2 };
-  return [...PROGRAMS].sort((a, b) => {
-    const ga = a.goals.indexOf(goal) === -1 ? 9 : a.goals.indexOf(goal);
-    const gb = b.goals.indexOf(goal) === -1 ? 9 : b.goals.indexOf(goal);
-    if (ga !== gb) return ga - gb;
-    return Math.abs(levelOrder[a.level] - levelOrder[experience]) - Math.abs(levelOrder[b.level] - levelOrder[experience]);
-  });
+  const score = (p: Program) => {
+    const g = p.goals.indexOf(goal);
+    return (g === -1 ? 4 : g) + 1.5 * Math.abs(levelOrder[p.level] - levelOrder[experience]);
+  };
+  return [...PROGRAMS].sort((a, b) => score(a) - score(b));
 }

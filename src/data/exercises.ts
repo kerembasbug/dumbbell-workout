@@ -127,9 +127,9 @@ const IMG = {
 } as const;
 
 /**
- * v1 dumbbell egzersiz veri tabanı. Tüm bölgeleri kapsar.
+ * v1 dambıl egzersiz veri tabanı. Tüm bölgeleri kapsar.
  * `baseLoadFactor`: referans kullanıcı (orta seviye, erkek, hipertrofi hedefi) için
- * dumbbell başına önerilen ağırlığın vücut ağırlığına oranı. Öneri motoru bunu ölçekler.
+ * dambıl başına önerilen ağırlığın vücut ağırlığına oranı. Öneri motoru bunu ölçekler.
  */
 export const EXERCISES: Exercise[] = [
   // ---------------- GÖĞÜS ----------------
@@ -144,9 +144,9 @@ export const EXERCISES: Exercise[] = [
     mode: 'pair',
     baseLoadFactor: 0.27,
     steps: [
-      'Sırt üstü bir bench veya yere uzanın, her elde bir dumbbell.',
+      'Sırt üstü bir bench veya yere uzanın, her elde bir dambıl.',
       'Dumbbell’ları göğüs hizasında, dirsekler ~45° açıyla tutun.',
-      'Nefes vererek dumbbell’ları yukarı, kollar tam açılana kadar itin.',
+      'Nefes vererek dambılları yukarı, kollar tam açılana kadar itin.',
       'Kontrollü şekilde başlangıç pozisyonuna indirin.',
     ],
     tips: ['Bel boşluğunu koruyun, omuzları geriye sabitleyin.', 'Dirsekleri kilitlemeyin.'],
@@ -162,7 +162,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'pair',
     baseLoadFactor: 0.25,
     steps: [
-      'Yere sırt üstü uzanın, dizler bükülü, her elde dumbbell.',
+      'Yere sırt üstü uzanın, dizler bükülü, her elde dambıl.',
       'Dumbbell’ları göğüs hizasında tutun.',
       'Yukarı doğru itin, kollar açılsın.',
       'Dirsekler yere değene kadar indirin, kısa duraklayın.',
@@ -180,7 +180,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'pair',
     baseLoadFactor: 0.13,
     steps: [
-      'Sırt üstü uzanın, dumbbell’ları göğüs üzerinde, avuçlar karşılıklı.',
+      'Sırt üstü uzanın, dambılları göğüs üzerinde, avuçlar karşılıklı.',
       'Dirsekleri hafif bükülü tutarak kolları yanlara açın.',
       'Göğüste gerilme hissedince geri toplayın.',
     ],
@@ -200,7 +200,7 @@ export const EXERCISES: Exercise[] = [
     baseLoadFactor: 0.3,
     steps: [
       'Bir diz ve eli bench/sandalyeye koyun, sırt yere paralel.',
-      'Diğer elde dumbbell, kol aşağı uzanmış.',
+      'Diğer elde dambıl, kol aşağı uzanmış.',
       'Dirseği gövde boyunca yukarı çekin, kürek kemiğini sıkın.',
       'Kontrollü indirin. Set bitince taraf değiştirin.',
     ],
@@ -218,7 +218,7 @@ export const EXERCISES: Exercise[] = [
     baseLoadFactor: 0.22,
     steps: [
       'Ayaklar omuz genişliğinde, dizler hafif bükülü, gövde öne eğik.',
-      'Her elde dumbbell, kollar aşağı sarkık.',
+      'Her elde dambıl, kollar aşağı sarkık.',
       'Dumbbell’ları kaburgalara doğru çekin, dirsekler geriye.',
       'Kontrollü indirin.',
     ],
@@ -235,7 +235,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'single',
     baseLoadFactor: 0.2,
     steps: [
-      'Sırt üstü uzanın, tek dumbbell’ı iki elle göğüs üzerinde tutun.',
+      'Sırt üstü uzanın, tek dambılı iki elle göğüs üzerinde tutun.',
       'Kolları hafif bükülü tutarak başın arkasına doğru indirin.',
       'Sırtta gerilme hissedince kontrollü geri getirin.',
     ],
@@ -254,7 +254,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'pair',
     baseLoadFactor: 0.2,
     steps: [
-      'Oturarak veya ayakta, dumbbell’ları omuz hizasında tutun.',
+      'Oturarak veya ayakta, dambılları omuz hizasında tutun.',
       'Avuçlar öne bakacak şekilde yukarı itin.',
       'Kollar tam açılınca kontrollü indirin.',
     ],
@@ -271,7 +271,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'pair',
     baseLoadFactor: 0.1,
     steps: [
-      'Ayakta, her elde dumbbell, kollar yanlarda.',
+      'Ayakta, her elde dambıl, kollar yanlarda.',
       'Dirsekleri hafif bükülü tutarak kolları omuz hizasına kaldırın.',
       'Kontrollü indirin.',
     ],
@@ -288,7 +288,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'pair',
     baseLoadFactor: 0.1,
     steps: [
-      'Ayakta, dumbbell’lar uyluk önünde.',
+      'Ayakta, dambıllar uyluk önünde.',
       'Bir veya iki kolu öne, omuz hizasına kaldırın.',
       'Kontrollü indirin.',
     ],
@@ -307,7 +307,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'pair',
     baseLoadFactor: 0.15,
     steps: [
-      'Ayakta, dumbbell’lar yanlarda, avuçlar öne.',
+      'Ayakta, dambıllar yanlarda, avuçlar öne.',
       'Dirsekleri sabit tutarak ağırlıkları omuza doğru bükün.',
       'Tepede kasıp kontrollü indirin.',
     ],
@@ -324,7 +324,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'pair',
     baseLoadFactor: 0.15,
     steps: [
-      'Avuçlar karşılıklı (çekiç tutuşu), dumbbell’lar yanlarda.',
+      'Avuçlar karşılıklı (çekiç tutuşu), dambıllar yanlarda.',
       'Dirsekleri sabit tutarak yukarı bükün.',
       'Kontrollü indirin.',
     ],
@@ -360,7 +360,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'single',
     baseLoadFactor: 0.18,
     steps: [
-      'Tek dumbbell’ı iki elle baş üstünde tutun.',
+      'Tek dambılı iki elle baş üstünde tutun.',
       'Dirsekleri sabit tutarak ağırlığı başın arkasına indirin.',
       'Triceps’i kasarak yukarı kaldırın.',
     ],
@@ -396,7 +396,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'single',
     baseLoadFactor: 0.35,
     steps: [
-      'Tek dumbbell’ı göğüs önünde dik tutun.',
+      'Tek dambılı göğüs önünde dik tutun.',
       'Ayaklar omuz genişliğinde, kalçayı geriye iterek çömelin.',
       'Uyluklar yere paralel olunca topuklarla itip kalkın.',
     ],
@@ -413,7 +413,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'pair',
     baseLoadFactor: 0.2,
     steps: [
-      'Her elde dumbbell, kollar yanlarda.',
+      'Her elde dambıl, kollar yanlarda.',
       'Bir adım öne çıkın, arka diz yere yaklaşana kadar inin.',
       'Öne çıkan topukla itip kalkın. Taraf değiştirin.',
     ],
@@ -430,7 +430,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'pair',
     baseLoadFactor: 0.3,
     steps: [
-      'Ayakta, dumbbell’lar uyluk önünde.',
+      'Ayakta, dambıllar uyluk önünde.',
       'Dizleri hafif bükülü tutarak kalçadan öne eğilin.',
       'Dumbbell’lar baldır boyunca inerken sırtı düz tutun.',
       'Kalçayı öne iterek kalkın, glute’ları sıkın.',
@@ -448,7 +448,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'pair',
     baseLoadFactor: 0.3,
     steps: [
-      'Her elde dumbbell, ayakta dik durun.',
+      'Her elde dambıl, ayakta dik durun.',
       'Topukları kaldırıp parmak uçlarında yükselin.',
       'Tepede kasıp kontrollü inin.',
     ],
@@ -468,7 +468,7 @@ export const EXERCISES: Exercise[] = [
     baseLoadFactor: 0.12,
     steps: [
       'Oturun, dizler bükülü, gövde hafif geriye yatık.',
-      'Tek dumbbell’ı iki elle tutun.',
+      'Tek dambılı iki elle tutun.',
       'Gövdeyi sağa-sola döndürün, ağırlığı kalçanın yanına götürün.',
     ],
     tips: ['Hareketi karından kontrol edin.', 'Sırtı yuvarlamayın.'],
@@ -484,7 +484,7 @@ export const EXERCISES: Exercise[] = [
     mode: 'single',
     baseLoadFactor: 0.12,
     steps: [
-      'Sırt üstü uzanın, dizler bükülü, dumbbell’ı göğüste tutun.',
+      'Sırt üstü uzanın, dizler bükülü, dambılı göğüste tutun.',
       'Üst gövdeyi kaldırarak karnı kasın.',
       'Kontrollü inin.',
     ],
@@ -501,8 +501,8 @@ export const EXERCISES: Exercise[] = [
     mode: 'single',
     baseLoadFactor: 0.2,
     steps: [
-      'Ayakta, tek elde dumbbell, diğer el belde.',
-      'Gövdeyi dumbbell tarafına doğru yana eğin.',
+      'Ayakta, tek elde dambıl, diğer el belde.',
+      'Gövdeyi dambıl tarafına doğru yana eğin.',
       'Yan karnı kasarak geri doğrulun. Taraf değiştirin.',
     ],
     tips: ['Yalnızca yana hareket, öne eğilmeyin.', 'Kontrollü tempo.'],
@@ -522,7 +522,7 @@ export const EXERCISES: Exercise[] = [
     steps: [
       'Dumbbell’lar omuz hizasında, ayakta.',
       'Squat pozisyonuna inin.',
-      'Kalkarken hareketin momentumuyla dumbbell’ları baş üstüne itin.',
+      'Kalkarken hareketin momentumuyla dambılları baş üstüne itin.',
       'İndirip tekrarlayın.',
     ],
     tips: ['Squat ve press tek akıcı harekette.', 'Çekirdeği sıkı tutun.'],
@@ -538,8 +538,8 @@ export const EXERCISES: Exercise[] = [
     mode: 'pair',
     baseLoadFactor: 0.16,
     steps: [
-      'Şınav pozisyonu, eller dumbbell’ların üzerinde.',
-      'Çekirdeği sabit tutarak bir dumbbell’ı kaburgaya çekin.',
+      'Şınav pozisyonu, eller dambılların üzerinde.',
+      'Çekirdeği sabit tutarak bir dambılı kaburgaya çekin.',
       'İndirip diğer tarafa geçin.',
     ],
     tips: ['Kalçayı sabit tutun, dönmeyin.', 'Ayakları geniş açın (denge).'],
@@ -556,7 +556,7 @@ export const EXERCISES: Exercise[] = [
     baseLoadFactor: 0.32,
     steps: [
       'Dumbbell’lar ayakların yanında veya önünde, yerde.',
-      'Kalçadan eğilip dumbbell’ları kavrayın, sırt düz.',
+      'Kalçadan eğilip dambılları kavrayın, sırt düz.',
       'Topuklarla itip kalçayı öne sürerek ayağa kalkın.',
       'Kontrollü indirin.',
     ],

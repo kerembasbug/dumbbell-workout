@@ -147,3 +147,10 @@ describe('units', () => {
     expect(roundToMarketStep(7.3, 'metric')).toBe(7.5);
   });
 });
+
+describe('program önerisi seviyeyi gözetir', () => {
+  it('yeni başlayan + kas gelişimi → başlangıç programı', () => {
+    expect(rankPrograms('hypertrophy', 'beginner')[0].id).toBe('starter-fullbody');
+    expect(rankPrograms('hypertrophy', 'intermediate')[0].id).toBe('muscle-upper-lower');
+  });
+});

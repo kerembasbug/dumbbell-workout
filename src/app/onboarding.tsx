@@ -1,40 +1,33 @@
+import { getLocales } from 'expo-localization';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Image, View } from 'react-native';
 
-const HERO = require('../../assets/generated/onboarding-hero.jpg');
-
 import { Button, Card, Chip, Row, Screen, Spacer, Stepper, Text } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
-import { GOAL_SCHEME } from '@/domain/recommend';
-import type { Experience, Goal, Sex, UserProfile } from '@/domain/types';
+import type { Experience, Goal, Sex, Units, UserProfile } from '@/domain/types';
+import { COMMON_DUMBBELLS, fromDisplay, toDisplay, unitLabel } from '@/domain/units';
 import { useTheme } from '@/hooks/use-theme';
+import { type TKey, useT } from '@/i18n';
+import { tapFeedback } from '@/services/feedback';
 import { useProfileStore } from '@/store/profile';
 
-const GOALS: { id: Goal; label: string; desc: string }[] = [
-  { id: 'strength', label: 'Güç', desc: 'Daha ağır, az tekrar' },
-  { id: 'hypertrophy', label: 'Kas Gelişimi', desc: 'Orta ağırlık, 8-12 tekrar' },
-  { id: 'endurance', label: 'Dayanıklılık', desc: 'Hafif, çok tekrar' },
-  { id: 'fatloss', label: 'Yağ Yakımı', desc: 'Yüksek tempo, çok tekrar' },
-  { id: 'general', label: 'Genel Fitness', desc: 'Dengeli antrenman' },
-];
+const HERO = require('../../assets/generated/onboarding-hero.jpg');
+const GOALS: Goal[] = ['hypertrophy', 'strength', 'fatloss', 'endurance', 'general'];
+const EXPERIENCES: Experience[] = ['beginner', 'intermediate', 'advanced'];
+const SEXES: Sex[] = ['male', 'female', 'unspecified'];
 
-const EXPERIENCES: { id: Experience; label: string }[] = [
-  { id: 'beginner', label: 'Acemi' },
-  { id: 'intermediate', label: 'Orta' },
-  { id: 'advanced', label: 'İleri' },
-];
-
-const SEXES: { id: Sex; label: string }[] = [
-  { id: 'male', label: 'Erkek' },
-  { id: 'female', label: 'Kadın' },
-  { id: 'unspecified', label: 'Belirtmek istemiyorum' },
-];
-
-const COMMON_DUMBBELLS = [2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20, 22.5, 25, 30];
+function defaultUnits(): Units {
+  try {
+    return getLocales()[0]?.measurementSystem === 'us' ? 'imperial' : 'metric';
+  } catch {
+    return 'metric';
+  }
+}
 
 export default function OnboardingScreen() {
-  const t = useTheme();
+  const c = useTheme();
+  const { t } = useT();
   const router = useRouter();
   const setProfile = useProfileStore((s) => s.setProfile);
 
@@ -42,29 +35,48 @@ export default function OnboardingScreen() {
   const [goal, setGoal] = useState<Goal>('hypertrophy');
   const [experience, setExperience] = useState<Experience>('beginner');
   const [sex, setSex] = useState<Sex>('unspecified');
+  const [units, setUnits] = useState<Units>(defaultUnits);
   const [weightKg, setWeightKg] = useState(75);
   const [heightCm, setHeightCm] = useState(175);
   const [owned, setOwned] = useState<number[]>([]);
 
-  const toggleDumbbell = (w: number) =>
-    setOwned((prev) => (prev.includes(w) ? prev.filter((x) => x !== w) : [...prev, w].sort((a, b) => a - b)));
+  const ul = unitLabel(units);
+  const toggleDumbbell = (display: number) => {
+    const kg = fromDisplay(display, units);
+    setOwned((prev) =>
+      prev.some((w) => toDisplay(w, units) === display)
+        ? prev.filter((w) => toDisplay(w, units) !== display)
+        : [...prev, kg].sort((a, b) => a - b),
+    );
+  };
 
-  const steps = [
+  const steps: { title: TKey; subtitle: TKey; body: React.ReactNode }[] = [
     {
-      title: 'Hedefin ne?',
-      subtitle: 'Sana uygun set ve tekrar planını buna göre belirleyeceğiz.',
+      title: 'onboarding.goal.title',
+      subtitle: 'onboarding.goal.subtitle',
       body: (
         <View style={{ gap: Spacing.sm }}>
           {GOALS.map((g) => (
-            <Card key={g.id} onPress={() => setGoal(g.id)} style={goal === g.id ? { borderColor: t.accent, borderWidth: 2 } : undefined}>
+            <Card
+              key={g}
+              onPress={() => {
+                tapFeedback();
+                setGoal(g);
+              }}
+              accessibilityLabel={t(`goal.${g}`)}
+              style={goal === g ? { borderColor: c.accent, borderWidth: 2 } : undefined}>
               <Row style={{ justifyContent: 'space-between' }}>
                 <View style={{ flex: 1 }}>
-                  <Text variant="subtitle">{g.label}</Text>
+                  <Text variant="subtitle">{t(`goal.${g}`)}</Text>
                   <Text variant="caption" muted>
-                    {g.desc}
+                    {t(`goal.${g}.desc`)}
                   </Text>
                 </View>
-                {goal === g.id && <Text color={t.accent} variant="subtitle">✓</Text>}
+                {goal === g && (
+                  <Text color={c.accent} variant="subtitle">
+                    ✓
+                  </Text>
+                )}
               </Row>
             </Card>
           ))}
@@ -72,69 +84,74 @@ export default function OnboardingScreen() {
       ),
     },
     {
-      title: 'Deneyim seviyen?',
-      subtitle: 'Ağırlık önerisini buna göre ölçekleriz.',
+      title: 'onboarding.exp.title',
+      subtitle: 'onboarding.exp.subtitle',
       body: (
-        <Row style={{ flexWrap: 'wrap', gap: Spacing.sm }}>
+        <Row style={{ flexWrap: 'wrap' }}>
           {EXPERIENCES.map((e) => (
-            <Chip key={e.id} label={e.label} selected={experience === e.id} onPress={() => setExperience(e.id)} />
+            <Chip key={e} label={t(`level.${e}`)} selected={experience === e} onPress={() => setExperience(e)} />
           ))}
         </Row>
       ),
     },
     {
-      title: 'Biraz da senden bahset',
-      subtitle: 'Önerilen ağırlık kilo, cinsiyet ve deneyimine göre hesaplanır.',
+      title: 'onboarding.body.title',
+      subtitle: 'onboarding.body.subtitle',
       body: (
-        <View style={{ gap: Spacing.lg }}>
-          <View>
-            <Text variant="label" muted>
-              Cinsiyet
-            </Text>
-            <Spacer size={Spacing.sm} />
-            <Row style={{ flexWrap: 'wrap', gap: Spacing.sm }}>
-              {SEXES.map((s) => (
-                <Chip key={s.id} label={s.label} selected={sex === s.id} onPress={() => setSex(s.id)} />
-              ))}
-            </Row>
-          </View>
-          <Row style={{ justifyContent: 'space-between' }}>
-            <Text variant="subtitle">Kilo</Text>
-            <Stepper value={weightKg} onChange={setWeightKg} step={1} min={30} max={250} suffix="kg" />
+        <Card>
+          <Row style={{ flexWrap: 'wrap' }}>
+            {SEXES.map((s) => (
+              <Chip key={s} label={t(`sex.${s}`)} selected={sex === s} onPress={() => setSex(s)} />
+            ))}
           </Row>
-          <Row style={{ justifyContent: 'space-between' }}>
-            <Text variant="subtitle">Boy</Text>
-            <Stepper value={heightCm} onChange={setHeightCm} step={1} min={120} max={230} suffix="cm" />
+          <Spacer size={Spacing.md} />
+          <Row>
+            {(['metric', 'imperial'] as Units[]).map((un) => (
+              <Chip key={un} label={unitLabel(un)} selected={units === un} onPress={() => setUnits(un)} />
+            ))}
           </Row>
-        </View>
+          <Spacer size={Spacing.md} />
+          <Row style={{ justifyContent: 'space-between' }}>
+            <Text variant="label">{t('settings.weight')}</Text>
+            <Stepper
+              value={Math.round(toDisplay(weightKg, units))}
+              onChange={(v) => setWeightKg(fromDisplay(v, units))}
+              min={units === 'imperial' ? 66 : 30}
+              max={units === 'imperial' ? 550 : 250}
+              suffix={ul}
+            />
+          </Row>
+          <Spacer size={Spacing.sm} />
+          <Row style={{ justifyContent: 'space-between' }}>
+            <Text variant="label">{t('settings.height')}</Text>
+            <Stepper value={heightCm} onChange={setHeightCm} min={120} max={230} />
+          </Row>
+        </Card>
       ),
     },
     {
-      title: 'Hangi dumbbell’lar var?',
-      subtitle: 'Sahip olduğun ağırlıkları seç — öneriler bunlara yuvarlanır. (İsteğe bağlı)',
+      title: 'onboarding.dumbbells.title',
+      subtitle: 'onboarding.dumbbells.subtitle',
       body: (
-        <Row style={{ flexWrap: 'wrap', gap: Spacing.sm }}>
-          {COMMON_DUMBBELLS.map((w) => (
-            <Chip key={w} label={`${w} kg`} selected={owned.includes(w)} onPress={() => toggleDumbbell(w)} />
+        <Row style={{ flexWrap: 'wrap' }}>
+          {COMMON_DUMBBELLS[units].map((w) => (
+            <Chip
+              key={w}
+              label={`${w} ${ul}`}
+              selected={owned.some((kg) => toDisplay(kg, units) === w)}
+              onPress={() => toggleDumbbell(w)}
+            />
           ))}
         </Row>
       ),
     },
   ];
 
-  const isLast = step === steps.length - 1;
   const current = steps[step];
+  const isLast = step === steps.length - 1;
 
   const finish = async () => {
-    const profile: UserProfile = {
-      goal,
-      experience,
-      sex,
-      weightKg,
-      heightCm,
-      ownedDumbbellsKg: owned,
-      units: 'metric',
-    };
+    const profile: UserProfile = { goal, experience, sex, weightKg, heightCm, ownedDumbbellsKg: owned, units };
     await setProfile(profile);
     router.replace('/');
   };
@@ -146,33 +163,38 @@ export default function OnboardingScreen() {
           source={HERO}
           style={{ width: '100%', height: 180, borderRadius: 16, marginBottom: Spacing.md }}
           resizeMode="cover"
+          accessibilityIgnoresInvertColors
         />
       )}
       <Text variant="caption" muted>
-        Adım {step + 1} / {steps.length} • {GOAL_SCHEME[goal].label}
+        {t('onboarding.step', { n: step + 1, total: steps.length })} • {t(`goal.${goal}`)}
       </Text>
       <Spacer size={Spacing.sm} />
-      <Text variant="title">{current.title}</Text>
+      <View style={{ height: 4, borderRadius: 2, backgroundColor: c.backgroundElement }}>
+        <View style={{ width: `${((step + 1) / steps.length) * 100}%`, height: 4, borderRadius: 2, backgroundColor: c.accent }} />
+      </View>
+      <Spacer size={Spacing.md} />
+      <Text variant="title" accessibilityRole="header">
+        {t(current.title)}
+      </Text>
       <Spacer size={Spacing.sm} />
       <Text variant="body" muted>
-        {current.subtitle}
+        {t(current.subtitle)}
       </Text>
       <Spacer />
       {current.body}
       <Spacer size={Spacing.xl} />
       <Row style={{ gap: Spacing.md }}>
-        {step > 0 && (
-          <Button title="Geri" variant="secondary" onPress={() => setStep(step - 1)} style={{ flex: 1 }} />
-        )}
+        {step > 0 && <Button title={t('common.back')} variant="secondary" onPress={() => setStep(step - 1)} style={{ flex: 1 }} />}
         <Button
-          title={isLast ? 'Başla' : 'Devam'}
-          onPress={() => (isLast ? finish() : setStep(step + 1))}
+          title={isLast ? t('onboarding.finish') : t('common.continue')}
+          onPress={() => (isLast ? void finish() : setStep(step + 1))}
           style={{ flex: 2 }}
         />
       </Row>
       <Spacer size={Spacing.xl} />
       <Text variant="caption" muted style={{ textAlign: 'center' }}>
-        Bu uygulama rehber niteliğindedir, tıbbi tavsiye değildir.
+        {t('common.disclaimer')}
       </Text>
     </Screen>
   );
