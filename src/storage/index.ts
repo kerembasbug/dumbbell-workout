@@ -35,4 +35,7 @@ export async function removeKey(key: string): Promise<void> {
 export const StorageKeys = {
   profile: 'dw:profile:v1',
   history: 'dw:history:v1',
+  settings: 'dw:settings:v1',
+  program: 'dw:program:v1',
+  active: 'dw:active:v1',
 } as const;

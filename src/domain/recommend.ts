@@ -1,4 +1,5 @@
 import type { Exercise, Goal, Experience, Sex, UserProfile } from '@/domain/types';
+import { roundToMarketStep } from '@/domain/units';
 
 /**
  * Öneri motoru — iki yönlü çalışır:
@@ -53,13 +54,6 @@ export function nearestOwned(target: number, owned: number[]): number | null {
   );
 }
 
-/** Sahip olunan dumbbell yoksa makul bir kademeye yuvarlar (0.5 kg adım, küçükse). */
-function roundToStep(value: number): number {
-  if (value <= 0) return 0;
-  if (value < 10) return Math.round(value * 2) / 2; // 0.5 kg
-  return Math.round(value); // 1 kg
-}
-
 export interface WeightRecommendation {
   /** Ham (yuvarlanmamış) hesaplanan ağırlık, kg. */
   rawKg: number;
@@ -82,7 +76,7 @@ export function recommendWeight(profile: UserProfile, exercise: Exercise): Weigh
     GOAL_LOAD_FACTOR[profile.goal];
 
   const ownedMatch = nearestOwned(raw, profile.ownedDumbbellsKg);
-  const weightKg = ownedMatch != null ? ownedMatch : roundToStep(raw);
+  const weightKg = ownedMatch != null ? ownedMatch : roundToMarketStep(raw, profile.units ?? 'metric');
 
   return {
     rawKg: Math.round(raw * 10) / 10,

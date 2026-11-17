@@ -67,4 +67,10 @@ export interface WorkoutSession {
   completed: boolean;
   /** Toplam süre (sn), opsiyonel. */
   durationSec?: number;
+  /** Program günü ise gün adı (örn. "Üst Vücut A"). */
+  title?: string;
+  /** Hangi programdan başlatıldı. */
+  programId?: string;
+  /** Programdaki gün sırası (0'dan). */
+  programDayIndex?: number;
 }

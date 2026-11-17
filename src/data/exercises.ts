@@ -1,4 +1,7 @@
 import type { BodyRegion, Exercise } from '@/domain/types';
+import type { Lang } from '@/i18n/localized';
+
+import { EXERCISES_EN } from './exercises.en';
 
 const IMG = {
   'db-bench-press': {
@@ -575,4 +578,10 @@ export function exercisesForRegion(region: BodyRegion): Exercise[] {
 
 export function getExercise(id: string): Exercise | undefined {
   return EXERCISE_BY_ID[id];
+}
+
+/** Egzersizin adım ve ipuçlarını seçilen dilde döndürür. */
+export function exerciseText(ex: Exercise, lang: Lang): { steps: string[]; tips: string[] } {
+  if (lang === 'en' && EXERCISES_EN[ex.id]) return EXERCISES_EN[ex.id];
+  return { steps: ex.steps, tips: ex.tips };
 }
