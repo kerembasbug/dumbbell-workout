@@ -39,6 +39,10 @@ export interface Exercise {
   tips: string[];
   /** Vücut ağırlığına oranla referans yük (öneri motoru kalibrasyonu). */
   baseLoadFactor: number;
+  /** Gereken destek: sehpa (bench) ya da sandalye. */
+  support?: 'bench' | 'chair';
+  /** Destek yoksa yapılabilecek alternatif hareketin id'si. */
+  alternative?: string;
   /** Hareketin başlangıç pozu illüstrasyonu (require ile yüklenir). */
   imageStart?: number;
   /** Hareketin orta pozu illüstrasyonu (require ile yüklenir). */
@@ -67,4 +71,10 @@ export interface WorkoutSession {
   completed: boolean;
   /** Toplam süre (sn), opsiyonel. */
   durationSec?: number;
+  /** Program günü ise gün adı (örn. "Üst Vücut A"). */
+  title?: string;
+  /** Hangi programdan başlatıldı. */
+  programId?: string;
+  /** Programdaki gün sırası (0'dan). */
+  programDayIndex?: number;
 }

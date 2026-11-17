@@ -1,8 +1,15 @@
 import { create } from 'zustand';
 
 import type { BodyRegion, ExerciseLog, SetLog, WorkoutSession } from '@/domain/types';
+import { loadJSON, saveJSON, StorageKeys } from '@/storage';
 
-interface ActiveSession {
+export interface SessionMeta {
+  title?: string;
+  programId?: string;
+  programDayIndex?: number;
+}
+
+export interface ActiveSession extends SessionMeta {
   region: BodyRegion;
   exercises: ExerciseLog[];
   startedAt: number;
@@ -10,7 +17,10 @@ interface ActiveSession {
 
 interface SessionState {
   active: ActiveSession | null;
-  startSession: (region: BodyRegion) => void;
+  hydrated: boolean;
+  /** Uygulama kapanıp açılınca yarım kalan antrenmanı geri yükler. */
+  hydrate: () => Promise<void>;
+  startSession: (region: BodyRegion, meta?: SessionMeta, exercises?: ExerciseLog[]) => void;
   /** Egzersizi aktif antrenmana ekler; zaten varsa setlerini değiştirmez. */
   addExercise: (exerciseId: string, sets: SetLog[]) => void;
   removeExercise: (exIndex: number) => void;
@@ -34,9 +44,15 @@ function mutateExercises(
 
 export const useSessionStore = create<SessionState>((set, get) => ({
   active: null,
+  hydrated: false,
 
-  startSession: (region) => {
-    set({ active: { region, exercises: [], startedAt: Date.now() } });
+  hydrate: async () => {
+    const active = await loadJSON<ActiveSession>(StorageKeys.active);
+    set({ active: active ?? null, hydrated: true });
+  },
+
+  startSession: (region, meta, exercises = []) => {
+    set({ active: { region, exercises, startedAt: Date.now(), ...meta } });
   },
 
   addExercise: (exerciseId, sets) => {
@@ -108,6 +124,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       exercises: active.exercises,
       completed: true,
       durationSec: Math.round((Date.now() - active.startedAt) / 1000),
+      title: active.title,
+      programId: active.programId,
+      programDayIndex: active.programDayIndex,
     };
     set({ active: null });
     return session;
@@ -115,3 +134,10 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
   discard: () => set({ active: null }),
 }));
+
+// Her değişiklikte aktif antrenmanı diske yaz (uygulama kapanırsa kaybolmasın).
+useSessionStore.subscribe((state, prev) => {
+  if (state.hydrated && state.active !== prev.active) {
+    void saveJSON(StorageKeys.active, state.active);
+  }
+});

@@ -7,25 +7,39 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Colors } from '@/constants/theme';
 import { useColorMode } from '@/hooks/use-theme';
+import { useT } from '@/i18n';
+import { configureNotificationHandler } from '@/services/reminders';
 import { useHistoryStore } from '@/store/history';
 import { useProfileStore } from '@/store/profile';
+import { useProgramStore } from '@/store/program';
+import { useSessionStore } from '@/store/session';
+import { useSettingsStore } from '@/store/settings';
+
+configureNotificationHandler();
 
 export default function RootLayout() {
   const mode = useColorMode();
-  const t = Colors[mode];
-  const hydrateProfile = useProfileStore((s) => s.hydrate);
-  const profileHydrated = useProfileStore((s) => s.hydrated);
-  const hydrateHistory = useHistoryStore((s) => s.hydrate);
+  const c = Colors[mode];
+  const { t } = useT();
+  const ready = [
+    useProfileStore((s) => s.hydrated),
+    useSettingsStore((s) => s.hydrated),
+    useProgramStore((s) => s.hydrated),
+    useSessionStore((s) => s.hydrated),
+  ].every(Boolean);
 
   useEffect(() => {
-    hydrateProfile();
-    hydrateHistory();
-  }, [hydrateProfile, hydrateHistory]);
+    void useProfileStore.getState().hydrate();
+    void useHistoryStore.getState().hydrate();
+    void useSettingsStore.getState().hydrate();
+    void useProgramStore.getState().hydrate();
+    void useSessionStore.getState().hydrate();
+  }, []);
 
   const navTheme = mode === 'dark' ? DarkTheme : DefaultTheme;
   const themed = {
     ...navTheme,
-    colors: { ...navTheme.colors, background: t.background, card: t.card, text: t.text, border: t.border, primary: t.accent },
+    colors: { ...navTheme.colors, background: c.background, card: c.card, text: c.text, border: c.border, primary: c.accent },
   };
 
   return (
@@ -33,25 +47,29 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <ThemeProvider value={themed}>
           <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
-          {!profileHydrated ? (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: t.background }}>
-              <ActivityIndicator color={t.accent} />
+          {!ready ? (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: c.background }}>
+              <ActivityIndicator color={c.accent} />
             </View>
           ) : (
             <Stack
               screenOptions={{
-                headerStyle: { backgroundColor: t.background },
-                headerTintColor: t.text,
+                headerStyle: { backgroundColor: c.background },
+                headerTintColor: c.text,
                 headerShadowVisible: false,
-                contentStyle: { backgroundColor: t.background },
+                contentStyle: { backgroundColor: c.background },
+                headerBackButtonDisplayMode: 'minimal',
               }}>
-              <Stack.Screen name="index" options={{ title: 'Dambıl Antrenman' }} />
-              <Stack.Screen name="onboarding" options={{ title: 'Başlangıç', headerBackVisible: false }} />
-              <Stack.Screen name="region/[region]" options={{ title: 'Egzersizler' }} />
-              <Stack.Screen name="exercise/[id]" options={{ title: 'Egzersiz' }} />
-              <Stack.Screen name="workout" options={{ title: 'Antrenman' }} />
-              <Stack.Screen name="history" options={{ title: 'Geçmiş' }} />
-              <Stack.Screen name="settings" options={{ title: 'Profil & Ayarlar' }} />
+              <Stack.Screen name="index" options={{ title: t('app.name') }} />
+              <Stack.Screen name="onboarding" options={{ title: t('onboarding.title'), headerBackVisible: false }} />
+              <Stack.Screen name="programs/index" options={{ title: t('programs.title') }} />
+              <Stack.Screen name="programs/[id]" options={{ title: t('programs.title') }} />
+              <Stack.Screen name="region/[region]" options={{ title: '' }} />
+              <Stack.Screen name="exercise/[id]" options={{ title: '' }} />
+              <Stack.Screen name="workout" options={{ title: t('workout.title') }} />
+              <Stack.Screen name="summary" options={{ title: '', headerBackVisible: false, gestureEnabled: false }} />
+              <Stack.Screen name="progress" options={{ title: t('progress.title') }} />
+              <Stack.Screen name="settings" options={{ title: t('settings.title') }} />
             </Stack>
           )}
         </ThemeProvider>
